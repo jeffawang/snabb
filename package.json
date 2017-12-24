@@ -13,6 +13,6 @@
     "watchify": "^3.9.0"
   },
   "scripts": {
-    "hot": "watchify main.js -o build/bundle.js"
+    "hot": "gulp hot"
   }
 }

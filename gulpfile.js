@@ -47,3 +47,4 @@ gulp.task('css', function () {
 // Just running the two tasks
 gulp.task('default', ['browserify', 'css']);
 
+gulp.task('hot', ['browserify']);

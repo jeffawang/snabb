@@ -5,11 +5,14 @@
   "license": "MIT",
   "dependencies": {
     "browserify": "^14.5.0",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
     "snabbdom": "^0.7.1",
     "typescript": "^2.6.2",
+    "vinyl-source-stream": "^2.0.0",
     "watchify": "^3.9.0"
   },
   "scripts": {
-      "hot": "watchify main.js -o build/bundle.js"
+    "hot": "watchify main.js -o build/bundle.js"
   }
 }

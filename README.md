@@ -3,6 +3,11 @@ Snabbdom Experiment
 
 Just an experiment with getting [snabbdom](https://github.com/snabbdom/snabbdom) up and running for frontend web dev.
 
+Usage
+---
+
+Building js: `./node_modules/.bin/browserify --debug main.js > build/bundle.js`
+
 Tools
 ---
 

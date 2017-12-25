@@ -1,21 +1,18 @@
 // inspired by http://christianalfoni.github.io/javascript/2014/08/15/react-js-workflow.html
+var gulp = require('gulp');
+var browserify = require('browserify');
+var watchify = require('watchify');
 
 var webserver = require('gulp-webserver');
 
-var gulp = require('gulp');
-// var source = require('vinyl-source-stream'); // Used to stream bundle for further handling
-var browserify = require('browserify');
-var watchify = require('watchify');
-// var reactify = require('reactify');
-var concat = require('gulp-concat');
-
 var fs = require('fs');
 
-var bundle_output = './build/bundle.js';
-var bundle_source = './main.js'
+var server_root = "./app/"
+var bundle_output = './app/bundle.js';
+var bundle_source = './app/main.js'
 
 gulp.task('webserver', function() {
-    gulp.src('.')
+    gulp.src(server_root)
         .pipe(webserver({
             livereload: true,
             directoryListing: false,
@@ -48,16 +45,5 @@ gulp.task('browserify', function() {
     return create_bundle();
 });
 
-// I added this so that you see how to run two watch tasks
-gulp.task('css', function () {
-    gulp.watch('styles/**/*.css', function () {
-        return gulp.src('styles/**/*.css')
-        .pipe(concat('main.css'))
-        .pipe(gulp.dest('build/'));
-    });
-});
-
-// Just running the two tasks
-gulp.task('default', ['browserify', 'css']);
-
 gulp.task('hot', ['browserify', 'webserver']);
+gulp.task('default', ['hot']);

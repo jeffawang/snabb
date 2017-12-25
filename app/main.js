@@ -9,7 +9,11 @@ var h = require('snabbdom/h').default; // helper function for creating vnodes
 
 var container = document.getElementById('container');
 
-var vnode = h('div#subcontainer', {}, 'hi');
+var vnode = h('div#subcontainer', {}, 'hello??');
+
+
+
+
 
 patch(container, vnode);
 

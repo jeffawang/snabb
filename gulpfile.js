@@ -1,5 +1,7 @@
 // inspired by http://christianalfoni.github.io/javascript/2014/08/15/react-js-workflow.html
 
+var webserver = require('gulp-webserver');
+
 var gulp = require('gulp');
 // var source = require('vinyl-source-stream'); // Used to stream bundle for further handling
 var browserify = require('browserify');
@@ -11,6 +13,15 @@ var fs = require('fs');
 
 var bundle_output = './build/bundle.js';
 var bundle_source = './main.js'
+
+gulp.task('webserver', function() {
+    gulp.src('.')
+        .pipe(webserver({
+            livereload: true,
+            directoryListing: false,
+            open: false
+        }));
+});
 
 gulp.task('browserify', function() {
     var bundler = browserify({
@@ -49,4 +60,4 @@ gulp.task('css', function () {
 // Just running the two tasks
 gulp.task('default', ['browserify', 'css']);
 
-gulp.task('hot', ['browserify']);
+gulp.task('hot', ['browserify', 'webserver']);

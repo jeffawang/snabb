@@ -91,21 +91,13 @@ class Path {
         this.commands = [];
     }
 
-    d() {
-        return this.commands.join(" ");
-    }
+    // returns a string suitable for use as the 'd' path attr
+    d() { return this.commands.join(" "); }
 
-    line() {
-        return this.commands.join(" ")
-    }
-
-    lineto(x, y) {
-        return this.commands.push(`L ${x} ${y}`);
-    }
-
-    moveto(x, y) {
-        return this.commands.push(`M ${x} ${y}`);
-    }
+    // generates and stores commands
+    lineto(x, y) { return this.commands.push(`L ${x} ${y}`); }
+    moveto(x, y) { return this.commands.push(`M ${x} ${y}`); }
+    closepath() { return this.commands.push('Z'); }
 }
 
 d = [
@@ -119,9 +111,6 @@ path = new Path();
 
 path.moveto(...d[0]);
 d.forEach((xy) => path.lineto(...xy));
-
-console.log("hi")
-console.log(path.d());
 
 function scale(min, max) {
     var diff = max - min;

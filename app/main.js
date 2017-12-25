@@ -4,12 +4,26 @@ var patch = snabbdom.init([ // Init patch function with chosen modules
   require('snabbdom/modules/props').default, // for setting properties on DOM elements
   require('snabbdom/modules/style').default, // handles styling on elements with support for animations
   require('snabbdom/modules/eventlisteners').default, // attaches event listeners
+  require('snabbdom/modules/attributes').default,
 ]);
 var h = require('snabbdom/h').default; // helper function for creating vnodes
 
 var container = document.getElementById('container');
 
-var vnode = h('div#subcontainer', {}, 'hello??');
+var vnode = h('div#subcontainer', {},[
+        h('button', { on: {click: function() {console.log('hi')}}},
+            ['hi']
+        ),
+        mysvg()
+    ]);
+
+function mysvg() {
+    return h('div', {}, [
+            h('svg', { style: { width: '100px', height: '100px', border: '1px solid #bada55' }}, [
+                h('circle', {attrs: {cx: 50, cy: 50, r: 40, stroke: 'green', 'stroke-width': 4, fill: 'yellow'}})
+            ]
+        )])
+}
 
 patch(container, vnode);
 

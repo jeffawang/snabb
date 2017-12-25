@@ -41,6 +41,38 @@ function mysvg(data) {
         )])
 }
 
+function myline(data) {
+    return h('path', {
+        style: {},
+        attrs: {
+            d: myline_d(data),
+           stroke: "green",
+          'stroke-width': "3",
+           fill:"aliceblue",
+           opacity: 0.25
+        }
+    });
+}
+
+xstep = 10;
+
+function myline_d(data) {
+
+    var x = 0;
+    var y = 0;
+    var sc = scale(Math.min(...data) - 10, Math.max(...data) + 10);
+    var d = "M 0 0 L 0 " + svg_style['height'] * sc(data[0]);
+
+    var h = svg_style['height'];
+
+    for (var i = 1; i < data.length; ++i) {
+        x += 10;
+        y = data[i];
+        d += ['', 'L', x, h * sc(y)].join(" ");
+    }
+    return d;
+}
+
 /*
  * M = moveto
  * L = lineto
@@ -54,46 +86,51 @@ function mysvg(data) {
  * Z = closepath
  */
 
-function myline(data) {
-    return h('path', {
-        style: {},
-        attrs: {
-            d: myline_d(data),
-           stroke: "green",
-          'stroke-width': "3",
-           fill:"none"
-        }
-    });
-}
-
-xstep = 10;
-
-function myline_d(data) {
-
-    var x = 0;
-    var y = 0;
-    var d = "M0 " + data[0];
-
-    var sc = scale(Math.min(...data) - 10, Math.max(...data) + 10);
-    for (var i = 1; i < data.length; ++i) {
-        x += 10;
-        y = data[i];
-        d += ['', 'L', x, svg_style['height'] * sc(y)].join(" ");
+class Path {
+    constructor() {
+        this.commands = [];
     }
-    return d;
+
+    d() {
+        return this.commands.join(" ");
+    }
+
+    line() {
+        return this.commands.join(" ")
+    }
+
+    lineto(x, y) {
+        return this.commands.push(`L ${x} ${y}`);
+    }
+
+    moveto(x, y) {
+        return this.commands.push(`M ${x} ${y}`);
+    }
 }
+
+d = [
+    [1, 2],
+    [4, 1],
+    [7, 1],
+    [8, 5]
+]
+
+path = new Path();
+
+path.moveto(...d[0]);
+d.forEach((xy) => path.lineto(...xy));
+
+console.log("hi")
+console.log(path.d());
 
 function scale(min, max) {
-    var diff = max - min
-    console.log(diff);
+    var diff = max - min;
     var sc = function(val) {
         ratio = (val - min) / (max - min);
         return ratio
     }
     return sc
 }
-
-console.log(Date.now());
 
 container = patch(container, vnode(truedata));
 

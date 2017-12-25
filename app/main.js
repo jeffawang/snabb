@@ -57,20 +57,13 @@ function myline(data) {
 xstep = 10;
 
 function myline_d(data) {
-
-    var x = 0;
-    var y = 0;
+    var height = 500
     var sc = scale(Math.min(...data) - 10, Math.max(...data) + 10);
-    var d = "M 0 0 L 0 " + svg_style['height'] * sc(data[0]);
-
-    var h = svg_style['height'];
-
-    for (var i = 1; i < data.length; ++i) {
-        x += 10;
-        y = data[i];
-        d += ['', 'L', x, h * sc(y)].join(" ");
-    }
-    return d;
+    var xys = data.map((d, i) => [i*10, height * sc(d)]);
+    var path = new Path();
+    path.moveto(...xys[0]);
+    xys.forEach((xy) => path.lineto(...xy))
+    return path.d();
 }
 
 /*
@@ -100,18 +93,6 @@ class Path {
     closepath() { return this.commands.push('Z'); }
 }
 
-d = [
-    [1, 2],
-    [4, 1],
-    [7, 1],
-    [8, 5]
-]
-
-path = new Path();
-
-path.moveto(...d[0]);
-d.forEach((xy) => path.lineto(...xy));
-
 function scale(min, max) {
     var diff = max - min;
     var sc = function(val) {
@@ -122,12 +103,5 @@ function scale(min, max) {
 }
 
 container = patch(container, vnode(truedata));
-
-/* TODO
- *
- * - axis mapping
- * - ajax/websocket?
- *
- */
 
 p = patch

@@ -1,11 +1,14 @@
 // inspired by http://christianalfoni.github.io/javascript/2014/08/15/react-js-workflow.html
 var gulp = require('gulp');
+var gutil = require('gulp-util');
+var fs = require('fs');
+
+// Compile js
 var browserify = require('browserify');
 var watchify = require('watchify');
 
+// Serve pages for testing
 var webserver = require('gulp-webserver');
-
-var fs = require('fs');
 
 var server_root = "./app/"
 var bundle_output = './app/bundle.js';
@@ -29,20 +32,21 @@ gulp.task('browserify', function() {
     });
     var watcher  = watchify(bundler);
 
-    function create_bundle() {
+    function rebundle() {
         var updateStart = Date.now();
         var bundle;
-        console.log('Updating!');
+        gutil.log('Updating!');
 
         bundle = watcher.bundle() // Create new bundle that uses the cache for high performance
+            .on('error', function(e) { gutil.log(e.stack) })
             .pipe(fs.createWriteStream(bundle_output))
 
-        console.log('Updated!', (Date.now() - updateStart) + 'ms');
+        gutil.log('Updated!', (Date.now() - updateStart) + 'ms');
         return bundle
     }
 
-    watcher.on('update', create_bundle);
-    return create_bundle();
+    watcher.on('update', rebundle);
+    return rebundle();
 });
 
 gulp.task('hot', ['browserify', 'webserver']);

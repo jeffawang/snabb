@@ -15,6 +15,10 @@ Hot reloading js: `yarn run hot`
 
 Building js: `./node_modules/.bin/browserify --debug main.js > build/bundle.js`
 
+Cutting versions:
+
+* `yarn version` (interactive)
+
 Tools
 ---
 

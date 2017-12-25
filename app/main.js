@@ -11,10 +11,6 @@ var container = document.getElementById('container');
 
 var vnode = h('div#subcontainer', {}, 'hello??');
 
-
-
-
-
 patch(container, vnode);
 
 /*

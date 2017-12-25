@@ -6,12 +6,13 @@ Just an experiment with getting [snabbdom](https://github.com/snabbdom/snabbdom)
 Usage
 ---
 
-Hot reloading js: `yarn run hot`
+dev server: `yarn run hot`
 
 * Uses yarn to run the `hot` script in package.json
     * Uses gulp to run the `hot` task in gulpfile.js
-        * Configures and runs hot-reloading browserify+watchify with sourcemaps :)
+        * browserify task: configures and runs hot-reloading js with sourcemaps
             * outputs js to `./build/bundle.js`
+        * webserver task: runs a webserver
 
 Building js: `./node_modules/.bin/browserify --debug main.js > build/bundle.js`
 

@@ -13,6 +13,7 @@ dev server: `yarn run hot`
         * browserify task: configures and runs hot-reloading js with sourcemaps
             * outputs js to `./build/bundle.js`
         * webserver task: runs a webserver
+            * hot reload is on (reload page without refresh)
 
 Building js: `./node_modules/.bin/browserify --debug main.js > build/bundle.js`
 

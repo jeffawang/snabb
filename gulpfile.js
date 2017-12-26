@@ -38,7 +38,7 @@ gulp.task('browserify', function() {
         gutil.log('Updating!');
 
         bundle = watcher.bundle() // Create new bundle that uses the cache for high performance
-            .on('error', function(e) { gutil.log(e.stack) })
+            .on('error', function(e) { gutil.log("Error browserifying!"); gutil.log(e.stack) })
             .pipe(fs.createWriteStream(bundle_output))
 
         gutil.log('Updated!', (Date.now() - updateStart) + 'ms');

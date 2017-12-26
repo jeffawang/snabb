@@ -105,3 +105,16 @@ function scale(min, max) {
 container = patch(container, vnode(truedata));
 
 p = patch
+
+fetch('/data.json')
+    .then(response => {
+        if (response.ok)
+            return Promise.resolve(response);
+        else
+            return Promise.reject(new Error('Failed to load'));
+    })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(function(error) {
+        console.log(`Error: ${error.message}`);
+    });

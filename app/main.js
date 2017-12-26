@@ -91,6 +91,18 @@ function linegraph(ctrl) {
     return lg;
 }
 
+function dataminmax(data, i) {
+    var first = data[0];
+    var val = data.reduce(function(acc, c) {
+        if (c[i] < acc[0])
+            acc[0] = c[i];
+        else if (c[i] > acc[1])
+            acc[1] = c[i];
+        return acc
+    }, [first[i], first[i]]);
+    return val;
+}
+
 function myline_d(data) {
     var lg_params = {
         w: svg_params['style']['width'],
@@ -103,41 +115,11 @@ function myline_d(data) {
 
     var xys = data.map((d) => [lg.x(d[0]), lg.y(d[1])]);
 
-    var path = new Path();
-    path.moveto(...xys[0]);
-    xys.forEach((xy) => path.lineto(...xy));
+    var p = path();
+    p.moveto(...xys[0]);
+    xys.forEach((xy) => p.lineto(...xy));
 
-    return path.d();
-}
-
-
-class LinearScale {
-    constructor(domain, range) {
-        // copy values, not reference
-        this.domain = domain.slice();
-        this.range = range.slice();
-    }
-    scale(v) {
-        var ratio = (v - this.domain[0]) / (this.domain[1] - this.domain[0]);
-        var ranged = this.range[0] + ratio * (this.range[1] - this.range[0]);
-        return ranged;
-    }
-    invert() {
-        this.range.reverse();
-        return this;
-    }
-}
-
-function dataminmax(data, i) {
-    var first = data[0];
-    var val = data.reduce(function(acc, c) {
-        if (c[i] < acc[0])
-            acc[0] = c[i];
-        else if (c[i] > acc[1])
-            acc[1] = c[i];
-        return acc
-    }, [first[i], first[i]]);
-    return val;
+    return p.d();
 }
 /*
  * M = moveto
@@ -152,18 +134,20 @@ function dataminmax(data, i) {
  * Z = closepath
  */
 
-class Path {
-    constructor() {
-        this.commands = [];
-    }
+function path() {
+    var commands = [];
+
+    function p() {};
 
     // returns a string suitable for use as the 'd' path attr
-    d() { return this.commands.join(" "); }
+    p.d = function() { return commands.join(" "); };
 
     // generates and stores commands
-    lineto(x, y) { return this.commands.push(`L ${x} ${y}`); }
-    moveto(x, y) { return this.commands.push(`M ${x} ${y}`); }
-    closepath() { return this.commands.push('Z'); }
+    p.lineto = function(x, y) { return commands.push(`L ${x} ${y}`); };
+    p.moveto = function(x, y) { return commands.push(`M ${x} ${y}`); };
+    p.closepath = function() { return commands.push('Z'); };
+
+    return p;
 }
 
 fetch('/data.json')

@@ -18,25 +18,6 @@ var svg_params = {
 
 var container = document.getElementById('container');
 
-class Plot {
-    constructor(params = {}, children = []) {
-        this.params = params;
-        this.children = children
-    }
-    render() {
-        var rendered_children = this.children.map((c) => c.render(this.params));
-        return h('div.plot-container', {}, [
-            h('svg', this.params, rendered_children)
-        ]);
-    }
-}
-
-class LineGraph {
-    constructor(params = {}, children = []) {
-        
-    }
-}
-
 function vnode(data) {
     return h('div#subcontainer', {},[
         h('div', {}, [
@@ -56,6 +37,80 @@ function vnode(data) {
         )])
     ]);
 }
+
+class Plot {
+    constructor(params = {}, children = []) {
+        this.params = params;
+        this.children = children
+    }
+    render() {
+        return h('div.plot-container', {}, [
+            h('svg', this.params,
+                this.children.map((c) => c.render(this.params))
+             )
+        ]);
+    }
+}
+
+class LineGraph {
+    constructor(params = {}, children = []) {
+        this.data = params.data;
+    }
+    get scales() {
+    }
+    d() {
+        
+    }
+}
+
+function linearscale(domain, range) {
+    var domain = domain.slice();
+    var range = range.slice();
+    function scale(x) {
+        var ratio = (x - domain[0]) / (domain[1] - domain[0]);
+        var ranged = range[0] + ratio * (range[1] - range[0]);
+        return ranged;
+    }
+    scale.invert = function() {
+        range.reverse();
+        return scale;
+    };
+    return scale;
+}
+
+function linegraph(ctrl) {
+    var data = ctrl.data();
+    var w = ctrl.w;
+    var h = ctrl.h;
+    var d = ctrl.d; // data
+
+    function lg() {}
+
+    lg.x = linearscale(dataminmax(data, 0), [0, w]);
+    lg.y = linearscale(dataminmax(data, 1), [0, h]).invert();
+
+    return lg;
+}
+
+function myline_d(data) {
+    var lg_params = {
+        w: svg_params['style']['width'],
+        h: svg_params['style']['height'],
+        d: [[],[]],
+        data: function(){return data;},
+    }
+
+    var lg = linegraph(lg_params);
+
+    var xys = data.map((d) => [lg.x(d[0]), lg.y(d[1])]);
+
+    var path = new Path();
+    path.moveto(...xys[0]);
+    xys.forEach((xy) => path.lineto(...xy));
+
+    return path.d();
+}
+
 
 class LinearScale {
     constructor(domain, range) {
@@ -85,23 +140,6 @@ function dataminmax(data, i) {
     }, [first[i], first[i]]);
     return val;
 }
-
-function myline_d(data) {
-    var xminmax = dataminmax(data, 0);
-    var yminmax = dataminmax(data, 1);
-    var x = new LinearScale(dataminmax(data, 0), [0, svg_params['style']['width']]);
-    var y = new LinearScale(dataminmax(data, 1), [0, svg_params['style']['height']]);
-    y.invert();
-
-    var xys = data.map((d) => [x.scale(d[0]), y.scale(d[1])]);
-
-    var path = new Path();
-    path.moveto(...xys[0]);
-    xys.forEach((xy) => path.lineto(...xy));
-
-    return path.d();
-}
-
 /*
  * M = moveto
  * L = lineto

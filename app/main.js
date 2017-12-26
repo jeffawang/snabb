@@ -68,7 +68,7 @@ function linearscale(domain, range) {
     var range = range.slice();
     function scale(x) {
         const ratio = (x - domain[0]) / (domain[1] - domain[0]);
-        const ranged = range[0] + ratio * (range[1] - range[0]);
+              ranged = range[0] + ratio * (range[1] - range[0]);
         return ranged;
     }
     scale.invert = function() {
@@ -79,9 +79,9 @@ function linearscale(domain, range) {
 }
 
 function linegraph(ctrl) {
-    const data = ctrl.data();
-    const w = ctrl.w;
-    const h = ctrl.h;
+    const data = ctrl.data(),
+          w    = ctrl.w,
+          h    = ctrl.h;
 
     function lg() {}
 

@@ -57,35 +57,45 @@ xstep = 10;
 
 class LinearScale {
     constructor(domain, range) {
-        this.d_min = domain[0];
-        this.d_max = domain[1];
-        this.r_min = range[0];
-        this.r_max = range[1];
+        this.domain = domain;
+        this.range = range;
         return 0;
     }
     scale(v) {
-        var ratio = (v - this.d_min) / (this.d_max - this.d_min);
-        var ranged = this.r_min + ratio * (this.r_max - this.r_min);
+        var d_min = this.domain[0];
+        var d_max = this.domain[1];
+        var r_min = this.range[0];
+        var r_max = this.range[1];
+        var ratio = (v - d_min) / (d_max - d_min);
+        var ranged = r_min + ratio * (r_max - r_min);
         return ranged;
     }
 }
 
 function dataminmax(data) {
-    console.log(data);
-    return data.reduce(function(acc, curr) {
-        acc[0] = Math.min(curr[0], acc[0]);
-        acc[1] = Math.min(curr[1], acc[1]);
+    var val = data.reduce(function(acc, c) {
+        acc[0] = Math.min(c[0], acc[0]);
+        acc[1] = Math.max(c[1], acc[1]);
+        return acc
     }, data[0]);
+    console.log(val);
+    return val
 }
 
 function myline_d(data) {
     var x = new LinearScale([0, data.length-1], [0, svg_style['width']]);
-    var minmax = dataminmax(data)
+    var minmax = dataminmax(data);
     var y = new LinearScale([minmax[0], minmax[1]], [0, svg_style['height']]);
-    var xys = data.map((d, i) => [x.scale(i), y.scale(d)]);
+
+
+    console.log(x.domain, x.range);
+    console.log(y.domain, y.range);
+    var xys = data.map((d) => [x.scale(d[0]), y.scale(d[1])]);
+
     var path = new Path();
     path.moveto(...xys[0]);
-    xys.forEach((xy) => path.lineto(...xy))
+    xys.forEach((xy) => path.lineto(...xy));
+
     return path.d();
 }
 
@@ -114,15 +124,6 @@ class Path {
     lineto(x, y) { return this.commands.push(`L ${x} ${y}`); }
     moveto(x, y) { return this.commands.push(`M ${x} ${y}`); }
     closepath() { return this.commands.push('Z'); }
-}
-
-function scale(min, max) {
-    var diff = max - min;
-    var sc = function(val) {
-        ratio = (val - min) / (max - min);
-        return ratio
-    }
-    return sc
 }
 
 container = patch(container, vnode(truedata));

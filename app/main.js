@@ -14,9 +14,6 @@ svg_style = {
  border : '1px solid #bada55'
 }
 
-rawdata = [435,281,64,315,87,263,478,19,217,237,68,328,148,406,351,489,15,311,420,87,]
-truedata = rawdata.map((d,i) => [i, d]);
-
 var container = document.getElementById('container');
 
 function vnode(data) {
@@ -53,43 +50,42 @@ function myline(data) {
     });
 }
 
-xstep = 10;
-
 class LinearScale {
     constructor(domain, range) {
-        this.domain = domain;
-        this.range = range;
-        return 0;
+        // copy values, not reference
+        this.domain = domain.slice();
+        this.range = range.slice();
     }
     scale(v) {
-        var d_min = this.domain[0];
-        var d_max = this.domain[1];
-        var r_min = this.range[0];
-        var r_max = this.range[1];
-        var ratio = (v - d_min) / (d_max - d_min);
-        var ranged = r_min + ratio * (r_max - r_min);
+        var ratio = (v - this.domain[0]) / (this.domain[1] - this.domain[0]);
+        var ranged = this.range[0] + ratio * (this.range[1] - this.range[0]);
         return ranged;
+    }
+    invert() {
+        this.range.reverse();
+        return this;
     }
 }
 
-function dataminmax(data) {
+function dataminmax(data, i) {
+    var first = data[0];
     var val = data.reduce(function(acc, c) {
-        acc[0] = Math.min(c[0], acc[0]);
-        acc[1] = Math.max(c[1], acc[1]);
+        if (c[i] < acc[0])
+            acc[0] = c[i];
+        else if (c[i] > acc[1])
+            acc[1] = c[i];
         return acc
-    }, data[0]);
-    console.log(val);
-    return val
+    }, [first[i], first[i]]);
+    return val;
 }
 
 function myline_d(data) {
-    var x = new LinearScale([0, data.length-1], [0, svg_style['width']]);
-    var minmax = dataminmax(data);
-    var y = new LinearScale([minmax[0], minmax[1]], [0, svg_style['height']]);
+    var xminmax = dataminmax(data, 0);
+    var yminmax = dataminmax(data, 1);
+    var x = new LinearScale(dataminmax(data, 0), [0, svg_style['width']]);
+    var y = new LinearScale(dataminmax(data, 1), [0, svg_style['height']]);
+    y.invert();
 
-
-    console.log(x.domain, x.range);
-    console.log(y.domain, y.range);
     var xys = data.map((d) => [x.scale(d[0]), y.scale(d[1])]);
 
     var path = new Path();
@@ -126,17 +122,22 @@ class Path {
     closepath() { return this.commands.push('Z'); }
 }
 
-container = patch(container, vnode(truedata));
+//container = patch(container, vnode(truedata));
 
 fetch('/data.json')
     .then(response => {
-        if (response.ok)
+        if (response.ok){
             return Promise.resolve(response);
+        }
         else
             return Promise.reject(new Error('Failed to load'));
     })
     .then(response => response.json())
-    //.then(data => console.log(data))
+    .then(data => {
+        console.log(data);
+        truedata = data;
+        container = patch(container, vnode(truedata));
+    })
     .catch(function(error) {
         console.log(`Error: ${error.message}`);
     });

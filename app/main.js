@@ -39,39 +39,22 @@ class LineGraph {
 
 function vnode(data) {
     return h('div#subcontainer', {},[
-        h('button', { on: {click: buttonclick}}, 'hi' ),
-        mysvg(data)
-    ]);
-}
-
-function buttonclick() {
-    truedata.shift();
-    container = patch(container, vnode(truedata));
-}
-
-function mysvg(data) {
-    var svg = new Plot(svg_params,
-            
-            ).render();
-    return h('div', {}, [
+        h('div', {}, [
             h('svg', svg_params, [
                 h('circle', {attrs: {cx: 50, cy: 50, r: 40, stroke: 'green', 'stroke-width': 4, fill: 'yellow'}}),
-                myline(data),
+                h('path', {
+                    style: {},
+                    attrs: {
+                        d: myline_d(data),
+                        stroke: "green",
+                        'stroke-width': "3",
+                        fill:"aliceblue",
+                        opacity: 0.25
+                    }
+                })
             ]
         )])
-}
-
-function myline(data) {
-    return h('path', {
-        style: {},
-        attrs: {
-            d: myline_d(data),
-           stroke: "green",
-          'stroke-width': "3",
-           fill:"aliceblue",
-           opacity: 0.25
-        }
-    });
+    ]);
 }
 
 class LinearScale {
@@ -145,8 +128,6 @@ class Path {
     moveto(x, y) { return this.commands.push(`M ${x} ${y}`); }
     closepath() { return this.commands.push('Z'); }
 }
-
-//container = patch(container, vnode(truedata));
 
 fetch('/data.json')
     .then(response => {

@@ -67,8 +67,8 @@ function linearscale(domain, range) {
     var domain = domain.slice();
     var range = range.slice();
     function scale(x) {
-        var ratio = (x - domain[0]) / (domain[1] - domain[0]);
-        var ranged = range[0] + ratio * (range[1] - range[0]);
+        const ratio = (x - domain[0]) / (domain[1] - domain[0]);
+        const ranged = range[0] + ratio * (range[1] - range[0]);
         return ranged;
     }
     scale.invert = function() {

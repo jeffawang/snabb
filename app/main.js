@@ -10,16 +10,20 @@ var h = require('snabbdom/h').default; // helper function for creating vnodes
 
 var view = require('./view');
 
-var svg_params = {
+var svg = {
     style: {
-        height: 500,
-        width: 1000,
+        height: 250,
+        width: 500,
         border: '1px solid #bada55'
     }
 };
 
 var container = document.getElementById('container');
-var a = app(container, {data: []});
+var a = app(container,
+    {
+        data: [],
+        svg: svg,
+    });
 
 // element: html element to mount
 function app(element, env) {
@@ -27,6 +31,7 @@ function app(element, env) {
 
     var ctrl = {
         data: () => env.data,
+        svg: env.svg,
     }
 
     function render() {
@@ -37,7 +42,6 @@ function app(element, env) {
 
     return {
         update: function(d) {
-                    console.log(env);
             env.data = d;
             render();
         }
@@ -54,7 +58,6 @@ fetch('/data.json')
     })
     .then(response => response.json())
     .then(data => {
-        console.log(data);
         truedata = data;
         //container = patch(container, vnode(truedata));
         a.update(data);

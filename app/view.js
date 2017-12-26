@@ -1,24 +1,18 @@
 var h = require('snabbdom/h').default;
 
-var svg_params = {
-    style: {
-        height: 500,
-        width: 1000,
-        border: '1px solid #bada55'
-    }
-};
-
 // Return a vnode representing the rendered view.
 function view(ctrl) {
-    data = ctrl.data();
+    var data = ctrl.data();
+    var width = ctrl.svg.style.width;
+    var height = ctrl.svg.style.height;
     return h('div.subcontainer', {}, [
         h('div', {}, [
-            h('svg', svg_params, [
+            h('svg', ctrl.svg, [
                 h('circle', {attrs: {cx: 50, cy: 50, r: 40, stroke: 'green', 'stroke-width': 4, fill: 'yellow'}}),
                 h('path', {
                     style: {},
                     attrs: {
-                        d: data.length ? myline_d(data) : "",
+                        d: data.length ? myline_d(data, width, height) : "",
                         stroke: "green",
                         'stroke-width': "3",
                         fill:"aliceblue",
@@ -42,18 +36,21 @@ function linearscale(domain, range) {
         range.reverse();
         return scale;
     };
+    scale.domain = function() { return domain; }
+    scale.range = function() { return range; }
     return scale;
 }
 
-function linegraph(ctrl) {
-    const data = ctrl.data(),
-          w    = ctrl.w,
-          h    = ctrl.h;
+function linegraph(params) {
+    const data = params.data;
 
     function lg() {}
 
-    lg.x = linearscale(dataminmax(data, 0), [0, ctrl.w]);
-    lg.y = linearscale(dataminmax(data, 1), [0, ctrl.h]).invert();
+    lg.x = linearscale(dataminmax(data, 0), [0, params.width]);
+    lg.y = linearscale(dataminmax(data, 1), [0, params.height]).invert();
+
+    console.log(lg.x.domain(), lg.x.range());
+    console.log(lg.y.domain(), lg.y.range());
 
     return lg;
 }
@@ -70,13 +67,14 @@ function dataminmax(data, i) {
     return val;
 }
 
-function myline_d(data) {
+function myline_d(data, width, height) {
     var lg_params = {
-        w: svg_params['style']['width'],
-        h: svg_params['style']['height'],
-        d: [[],[]],
-        data: function(){return data;},
+        width: width,
+        height: height,
+        data: data,
     }
+
+    console.log(lg_params);
 
     var lg = linegraph(lg_params);
 
@@ -88,6 +86,7 @@ function myline_d(data) {
 
     return p.d();
 }
+
 /*
  * M = moveto
  * L = lineto

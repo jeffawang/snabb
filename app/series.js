@@ -20,13 +20,9 @@ function view(ctrl) {
     function v() {}
 
     return h('path', {
-        style: style,
+        style: ctrl.style,
         attrs: {
             d: data.length ? myline_d(data, width, height) : '',
-            stroke: "green",
-            'stroke-width': "3",
-            fill:"aliceblue",
-            opacity: 0.25
         }
     });
 }

@@ -18,19 +18,12 @@ var svg = {
     }
 };
 
-var container = document.getElementById('container');
-var a = app(container,
-    {
-        data: [],
-        svg: svg,
-    });
-
 // element: html element to mount
 function app(element, env) {
     var vnode = element;
 
     var ctrl = {
-        data: () => env.data,
+        series: () => env.series,
         svg: env.svg,
     }
 
@@ -41,28 +34,73 @@ function app(element, env) {
     render();
 
     return {
-        update: function(d) {
-            env.data = d;
+        update: function(i, d) {
+            env.series[i].data = d;
             render();
         }
     }
 }
 
-fetch('/data.json')
-    .then(response => {
-        if (response.ok){
-            return Promise.resolve(response);
-        }
-        else
-            return Promise.reject(new Error('Failed to load'));
-    })
-    .then(response => response.json())
-    .then(data => {
-        truedata = data;
-        //container = patch(container, vnode(truedata));
-        a.update(data);
-    })
-    .catch(function(error) {
-        throw error;
-        //console.log(`Error: ${error.message}`);
+function refresh(app, index, data_endpoint) {
+    fetch(data_endpoint)
+        .then(response => {
+            if (response.ok){
+                return Promise.resolve(response);
+            }
+            else
+                return Promise.reject(new Error('Failed to load'));
+        })
+        .then(response => response.json())
+        .then(data => {
+            truedata = data;
+            //container = patch(container, vnode(truedata));
+            app.update(index, data);
+        })
+        .catch(function(error) {
+            throw error;
+            //console.log(`Error: ${error.message}`);
+        });
+}
+
+var rawcontainer = document.getElementById('container');
+var container = patch(rawcontainer, h('div#container', [
+    h('div'),
+    h('div'),
+]));
+
+c = container.children;
+
+var series_a = {
+    data: [],
+    style: {
+        opacity: 0.25,
+        stroke: 'green',
+        'stroke-width': 3,
+        fill: 'none',
+    },
+    name: 'a',
+    width: svg.style.width,
+    height: svg.style.height
+}
+
+var series_b = {
+    data: [],
+    style: {
+        opacity: 0.25,
+        stroke: 'red',
+        'stroke-width': 3,
+        fill: 'none',
+    },
+    name: 'a',
+    width: svg.style.width,
+    height: svg.style.height
+}
+
+var a = app(container.children[0],
+    {
+        series: [series_a, series_b],
+        svg: svg,
     });
+
+refresh(a, 0, '/data.json');
+refresh(a, 1, '/data2.json');

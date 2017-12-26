@@ -14,21 +14,21 @@ svg_style = {
  border : '1px solid #bada55'
 }
 
-truedata = [435,281,64,315,87,263,478,19,217,237,68,328,148,406,351,489,15,311,420,87,]
+rawdata = [435,281,64,315,87,263,478,19,217,237,68,328,148,406,351,489,15,311,420,87,]
+truedata = rawdata.map((d,i) => [i, d]);
 
 var container = document.getElementById('container');
 
 function vnode(data) {
     return h('div#subcontainer', {},[
-        h('button', { on: {click: function() {
-            truedata.shift();
-            var newnode = vnode(truedata);
-            container = patch(container, newnode) }}},
-
-            ['hi']
-        ),
+        h('button', { on: {click: buttonclick}}, 'hi' ),
         mysvg(data)
     ]);
+}
+
+function buttonclick() {
+    truedata.shift();
+    container = patch(container, vnode(truedata));
 }
 
 function mysvg(data) {
@@ -70,9 +70,18 @@ class LinearScale {
     }
 }
 
+function dataminmax(data) {
+    console.log(data);
+    return data.reduce(function(acc, curr) {
+        acc[0] = Math.min(curr[0], acc[0]);
+        acc[1] = Math.min(curr[1], acc[1]);
+    }, data[0]);
+}
+
 function myline_d(data) {
     var x = new LinearScale([0, data.length-1], [0, svg_style['width']]);
-    var y = new LinearScale([Math.min(...data), Math.max(...data)], [0, svg_style['height']]);
+    var minmax = dataminmax(data)
+    var y = new LinearScale([minmax[0], minmax[1]], [0, svg_style['height']]);
     var xys = data.map((d, i) => [x.scale(i), y.scale(d)]);
     var path = new Path();
     path.moveto(...xys[0]);
@@ -117,8 +126,6 @@ function scale(min, max) {
 }
 
 container = patch(container, vnode(truedata));
-
-p = patch;
 
 fetch('/data.json')
     .then(response => {

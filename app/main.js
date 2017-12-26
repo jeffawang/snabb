@@ -8,13 +8,34 @@ var patch = snabbdom.init([ // Init patch function with chosen modules
 ]);
 var h = require('snabbdom/h').default; // helper function for creating vnodes
 
-svg_style = {
- height : 500,
- width  : 1000,
- border : '1px solid #bada55'
-}
+var svg_params = {
+    style: {
+        height: 500,
+        width: 1000,
+        border: '1px solid #bada55'
+    }
+};
 
 var container = document.getElementById('container');
+
+class Plot {
+    constructor(params = {}, children = []) {
+        this.params = params;
+        this.children = children
+    }
+    render() {
+        var rendered_children = this.children.map((c) => c.render(this.params));
+        return h('div.plot-container', {}, [
+            h('svg', this.params, rendered_children)
+        ]);
+    }
+}
+
+class LineGraph {
+    constructor(params = {}, children = []) {
+        
+    }
+}
 
 function vnode(data) {
     return h('div#subcontainer', {},[
@@ -29,8 +50,11 @@ function buttonclick() {
 }
 
 function mysvg(data) {
+    var svg = new Plot(svg_params,
+            
+            ).render();
     return h('div', {}, [
-            h('svg', { style: svg_style }, [
+            h('svg', svg_params, [
                 h('circle', {attrs: {cx: 50, cy: 50, r: 40, stroke: 'green', 'stroke-width': 4, fill: 'yellow'}}),
                 myline(data),
             ]
@@ -82,8 +106,8 @@ function dataminmax(data, i) {
 function myline_d(data) {
     var xminmax = dataminmax(data, 0);
     var yminmax = dataminmax(data, 1);
-    var x = new LinearScale(dataminmax(data, 0), [0, svg_style['width']]);
-    var y = new LinearScale(dataminmax(data, 1), [0, svg_style['height']]);
+    var x = new LinearScale(dataminmax(data, 0), [0, svg_params['style']['width']]);
+    var y = new LinearScale(dataminmax(data, 1), [0, svg_params['style']['height']]);
     y.invert();
 
     var xys = data.map((d) => [x.scale(d[0]), y.scale(d[1])]);
@@ -139,5 +163,6 @@ fetch('/data.json')
         container = patch(container, vnode(truedata));
     })
     .catch(function(error) {
-        console.log(`Error: ${error.message}`);
+        throw error;
+        //console.log(`Error: ${error.message}`);
     });

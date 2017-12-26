@@ -9,8 +9,8 @@ var patch = snabbdom.init([ // Init patch function with chosen modules
 var h = require('snabbdom/h').default; // helper function for creating vnodes
 
 svg_style = {
- height : '500',
- width  : '1000',
+ height : 500,
+ width  : 1000,
  border : '1px solid #bada55'
 }
 
@@ -23,7 +23,6 @@ function vnode(data) {
         h('button', { on: {click: function() {
             truedata.shift();
             var newnode = vnode(truedata);
-            console.log(newnode);
             container = patch(container, newnode) }}},
 
             ['hi']
@@ -56,10 +55,25 @@ function myline(data) {
 
 xstep = 10;
 
+class LinearScale {
+    constructor(domain, range) {
+        this.d_min = domain[0];
+        this.d_max = domain[1];
+        this.r_min = range[0];
+        this.r_max = range[1];
+        return 0;
+    }
+    scale(v) {
+        var ratio = (v - this.d_min) / (this.d_max - this.d_min);
+        var ranged = this.r_min + ratio * (this.r_max - this.r_min);
+        return ranged;
+    }
+}
+
 function myline_d(data) {
-    var height = 500
-    var sc = scale(Math.min(...data) - 10, Math.max(...data) + 10);
-    var xys = data.map((d, i) => [i*10, height * sc(d)]);
+    var x = new LinearScale([0, data.length-1], [0, svg_style['width']]);
+    var y = new LinearScale([Math.min(...data), Math.max(...data)], [0, svg_style['height']]);
+    var xys = data.map((d, i) => [x.scale(i), y.scale(d)]);
     var path = new Path();
     path.moveto(...xys[0]);
     xys.forEach((xy) => path.lineto(...xy))
@@ -104,7 +118,7 @@ function scale(min, max) {
 
 container = patch(container, vnode(truedata));
 
-p = patch
+p = patch;
 
 fetch('/data.json')
     .then(response => {
@@ -114,7 +128,7 @@ fetch('/data.json')
             return Promise.reject(new Error('Failed to load'));
     })
     .then(response => response.json())
-    .then(data => console.log(data))
+    //.then(data => console.log(data))
     .catch(function(error) {
         console.log(`Error: ${error.message}`);
     });

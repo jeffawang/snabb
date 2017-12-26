@@ -79,15 +79,14 @@ function linearscale(domain, range) {
 }
 
 function linegraph(ctrl) {
-    var data = ctrl.data();
-    var w = ctrl.w;
-    var h = ctrl.h;
-    var d = ctrl.d; // data
+    const data = ctrl.data();
+    const w = ctrl.w;
+    const h = ctrl.h;
 
     function lg() {}
 
-    lg.x = linearscale(dataminmax(data, 0), [0, w]);
-    lg.y = linearscale(dataminmax(data, 1), [0, h]).invert();
+    lg.x = linearscale(dataminmax(data, 0), [0, ctrl.w]);
+    lg.y = linearscale(dataminmax(data, 1), [0, ctrl.h]).invert();
 
     return lg;
 }

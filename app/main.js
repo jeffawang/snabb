@@ -1,14 +1,4 @@
-var snabbdom = require('snabbdom');
-var patch = snabbdom.init([ // Init patch function with chosen modules
-  require('snabbdom/modules/class').default, // makes it easy to toggle classes
-  require('snabbdom/modules/props').default, // for setting properties on DOM elements
-  require('snabbdom/modules/style').default, // handles styling on elements with support for animations
-  require('snabbdom/modules/eventlisteners').default, // attaches event listeners
-  require('snabbdom/modules/attributes').default,
-]);
-var h = require('snabbdom/h').default; // helper function for creating vnodes
-
-var view = require('./view');
+var app = require('./graph');
 
 var svg = {
     style: {
@@ -17,29 +7,6 @@ var svg = {
         border: '1px solid #bada55'
     }
 };
-
-// element: html element to mount
-function app(element, env) {
-    var vnode = element;
-
-    var ctrl = {
-        series: () => env.series,
-        svg: env.svg,
-    }
-
-    function render() {
-        vnode = patch(vnode, view(ctrl))
-    }
-
-    render();
-
-    return {
-        update: function(i, d) {
-            env.series[i].data = d;
-            render();
-        }
-    }
-}
 
 function refresh(app, index, data_endpoint) {
     fetch(data_endpoint)
@@ -62,13 +29,7 @@ function refresh(app, index, data_endpoint) {
         });
 }
 
-var rawcontainer = document.getElementById('container');
-var container = patch(rawcontainer, h('div#container', [
-    h('div'),
-    h('div'),
-]));
-
-c = container.children;
+var container = document.getElementById('container');
 
 var series_a = {
     data: [],
@@ -96,7 +57,7 @@ var series_b = {
     height: svg.style.height
 }
 
-var a = app(container.children[0],
+var a = app(container,
     {
         series: [series_a, series_b],
         svg: svg,

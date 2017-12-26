@@ -8,27 +8,6 @@ var svg = {
     }
 };
 
-function refresh(app, index, data_endpoint) {
-    fetch(data_endpoint)
-        .then(response => {
-            if (response.ok){
-                return Promise.resolve(response);
-            }
-            else
-                return Promise.reject(new Error('Failed to load'));
-        })
-        .then(response => response.json())
-        .then(data => {
-            truedata = data;
-            //container = patch(container, vnode(truedata));
-            app.update(index, data);
-        })
-        .catch(function(error) {
-            throw error;
-            //console.log(`Error: ${error.message}`);
-        });
-}
-
 var container = document.getElementById('container');
 
 var series_a = {
@@ -59,9 +38,12 @@ var series_b = {
 
 var a = app(container,
     {
-        series: [series_a, series_b],
+        series: {
+            0: series_a,
+            'hello': series_b
+        },
         svg: svg,
     });
 
-refresh(a, 0, '/data.json');
-refresh(a, 1, '/data2.json');
+a.refresh(0, '/data.json');
+a.refresh('hello', '/data2.json');

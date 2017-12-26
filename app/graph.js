@@ -23,13 +23,37 @@ function app(element, env) {
         vnode = patch(vnode, view(ctrl))
     }
 
+    function update(i, d) {
+        env.series[i].data = d;
+        render();
+    }
+
+    function refresh(i, endpoint) {
+            fetch(endpoint)
+                .then(response => {
+                    if (response.ok){
+                        return Promise.resolve(response);
+                    }
+                    else
+                        return Promise.reject(new Error('Failed to load'));
+                })
+                .then(response => response.json())
+                .then(data => {
+                    truedata = data;
+                    //container = patch(container, vnode(truedata));
+                    update(i, data);
+                })
+                .catch(function(error) {
+                    throw error;
+                    //console.log(`Error: ${error.message}`);
+                });
+        }
+
     render();
 
     return {
-        update: function(i, d) {
-            env.series[i].data = d;
-            render();
-        }
+        update: update,
+        refresh: refresh
     }
 }
 

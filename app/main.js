@@ -17,50 +17,51 @@ var svg_params = {
 };
 
 var container = document.getElementById('container');
+var a = app(container, {data: []});
 
-function vnode(data) {
-    return h('div#subcontainer', {},[
+// element: html element to mount
+function app(element, env) {
+    var vnode = element;
+
+    var ctrl = {
+        data: () => env.data,
+    }
+
+    function render() {
+        vnode = patch(vnode, view(ctrl))
+    }
+
+    render();
+
+    return {
+        update: function(d) {
+                    console.log(env);
+            env.data = d;
+            render();
+        }
+    }
+}
+
+// Must return a vnode representing the rendered view.
+function view(ctrl) {
+    data = ctrl.data();
+    return h('div.subcontainer', {}, [
         h('div', {}, [
             h('svg', svg_params, [
                 h('circle', {attrs: {cx: 50, cy: 50, r: 40, stroke: 'green', 'stroke-width': 4, fill: 'yellow'}}),
                 h('path', {
                     style: {},
                     attrs: {
-                        d: myline_d(data),
+                        d: data.length ? myline_d(data) : "",
                         stroke: "green",
                         'stroke-width': "3",
                         fill:"aliceblue",
                         opacity: 0.25
                     }
-                })
-            ]
-        )])
+                }),
+            ])
+        ])
     ]);
-}
-
-class Plot {
-    constructor(params = {}, children = []) {
-        this.params = params;
-        this.children = children
-    }
-    render() {
-        return h('div.plot-container', {}, [
-            h('svg', this.params,
-                this.children.map((c) => c.render(this.params))
-             )
-        ]);
-    }
-}
-
-class LineGraph {
-    constructor(params = {}, children = []) {
-        this.data = params.data;
-    }
-    get scales() {
-    }
-    d() {
-        
-    }
 }
 
 function linearscale(domain, range) {
@@ -162,7 +163,8 @@ fetch('/data.json')
     .then(data => {
         console.log(data);
         truedata = data;
-        container = patch(container, vnode(truedata));
+        //container = patch(container, vnode(truedata));
+        a.update(data);
     })
     .catch(function(error) {
         throw error;

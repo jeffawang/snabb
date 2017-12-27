@@ -2,8 +2,8 @@ var app = require('./graph');
 
 var svg = {
     style: {
-        height: 250,
-        width: 500,
+        height: 300,
+        width: 1000,
         border: '1px solid #bada55'
     }
 };
@@ -34,12 +34,9 @@ var series_b = {
 
 var a = app(container,
     {
-        series: {
-            0: series_a,
-            'hello': series_b
-        },
+        series: [series_a, series_b],
         svg: svg,
     });
 
 a.refresh(0, '/data.json');
-a.refresh('hello', '/data2.json');
+a.refresh(1, '/data2.json');

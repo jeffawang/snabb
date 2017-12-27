@@ -9,6 +9,7 @@ function view(ctrl) {
     var height = ctrl.svg.style.height;
 
     // TODO: this could look nicer....
+    // works for arrays or an object with keys.
     var s = Object.keys(_series).map( k =>
         series(Object.assign({
             width: width,

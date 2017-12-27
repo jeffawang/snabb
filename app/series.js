@@ -46,7 +46,6 @@ function linearscale(domain, range) {
 
 function linegraph(params) {
     const data = params.data;
-    console.log(data);
 
     function lg() {}
 

@@ -15,69 +15,23 @@ function view(ctrl) {
     const data = ctrl.data,
           style = ctrl.style,
           name = ctrl.name,
-          width = ctrl.width;
-          height = ctrl.height;
+          scales = ctrl.scales;
     function v() {}
 
     return h('path', {
         style: ctrl.style,
         attrs: {
-            d: data.length ? myline_d(data, width, height) : '',
+            d: data.length ? myline_d(data, scales) : '',
         }
     });
 }
 
-function linearscale(domain, range) {
-    var domain = domain.slice();
-    var range = range.slice();
-    function scale(x) {
-        const ratio = (x - domain[0]) / (domain[1] - domain[0]);
-              ranged = range[0] + ratio * (range[1] - range[0]);
-        return ranged;
-    }
-    scale.invert = function() {
-        range.reverse();
-        return scale;
-    };
-    scale.domain = function() { return domain; }
-    scale.range = function() { return range; }
-    return scale;
-}
+function myline_d(data, scales) {
 
-function linegraph(params) {
-    const data = params.data;
+    var x = scales[0];
+    var y = scales[1];
 
-    function lg() {}
-
-    lg.x = linearscale(dataminmax(data, 0), [0, params.width]);
-    lg.y = linearscale(dataminmax(data, 1), [0, params.height]).invert();
-
-    return lg;
-}
-
-function dataminmax(data, i) {
-    var first = data[0];
-    var val = data.reduce(function(acc, c) {
-        if (c[i] < acc[0])
-            acc[0] = c[i];
-        else if (c[i] > acc[1])
-            acc[1] = c[i];
-        return acc
-    }, [first[i], first[i]]);
-    return val;
-}
-
-
-function myline_d(data, width, height) {
-    var lg_params = {
-        width: width,
-        height: height,
-        data: data,
-    }
-
-    var lg = linegraph(lg_params);
-
-    var xys = data.map((d) => [lg.x(d[0]), lg.y(d[1])]);
+    var xys = data.map((d) => [x(d[0]), y(d[1])]);
 
     var p = path();
     p.moveto(...xys[0]);

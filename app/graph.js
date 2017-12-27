@@ -40,7 +40,6 @@ function app(element, env) {
                 .then(response => response.json())
                 .then(data => {
                     truedata = data;
-                    //container = patch(container, vnode(truedata));
                     update(i, data);
                 })
                 .catch(function(error) {

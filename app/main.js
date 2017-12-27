@@ -19,8 +19,6 @@ var series_a = {
         fill: 'none',
     },
     name: 'a',
-    width: svg.style.width,
-    height: svg.style.height
 }
 
 var series_b = {
@@ -32,8 +30,6 @@ var series_b = {
         fill: 'none',
     },
     name: 'a',
-    width: svg.style.width,
-    height: svg.style.height
 }
 
 var a = app(container,

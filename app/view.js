@@ -8,8 +8,12 @@ function view(ctrl) {
     var width = ctrl.svg.style.width;
     var height = ctrl.svg.style.height;
 
-    var s = Object.keys(_series).map( (k) =>
-        series(_series[k])
+    // TODO: this could look nicer....
+    var s = Object.keys(_series).map( k =>
+        series(Object.assign({
+            width: width,
+            height: height
+        }, _series[k]))
     );
 
     return h('div.subcontainer', {}, [
